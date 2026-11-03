@@ -1,14 +1,844 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>nekonekone voicebank download website</title>
-  </head>
-  <body>
-    <main>
-      <h1>欢迎来到猫音ネコ的音源配布站</h1>
-      <p>https://space.bilibili.com/662766936音源管理者的哔哩哔哩主页</p>
-    </main>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>猫音ネコ Official</title>
+
+<style>
+:root{
+  --purple:#6b63d9;
+  --deep:#2b2f77;
+  --orange:#ffb347;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:"Segoe UI","PingFang SC",sans-serif;
+  background:linear-gradient(135deg,var(--purple),var(--deep));
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* ===== 背景特效 ===== */
+.bg{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.effect{
+  position:absolute;
+  opacity:.18;
+  animation:floatUp linear infinite;
+  transition:transform .2s ease-out;
+}
+
+@keyframes floatUp{
+  from{transform:translateY(100vh)}
+  to{transform:translateY(-120px)}
+}
+
+/* ===== 页面 ===== */
+.wrapper{
+  position:relative;
+  z-index:1;
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px 80px;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:40px;
+}
+
+header h1{
+  color:var(--orange);
+  font-size:42px;
+  margin:0;
+}
+
+.lang button{
+  background:rgba(255,255,255,.15);
+  border:none;
+  color:#fff;
+  padding:6px 10px;
+  margin-left:6px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.lang button.active{
+  background:var(--orange);
+  color:#000;
+}
+
+.main{
+  display:flex;
+  gap:40px;
+  align-items:center;
+}
+
+/* 轮播容器样式 - 完全替换原视觉区域，但保持布局和谐 */
+.visual{
+  flex-shrink:0;
+  max-width:360px;
+  width:100%;
+  position:relative;
+  border-radius:24px;
+  box-shadow:0 0 35px rgba(0,0,0,.45);
+  background:rgba(0,0,0,0.2);
+  backdrop-filter: blur(2px);
+  transition: all 0.2s ease;
+}
+
+.carousel-container{
+  width:100%;
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  background:#1e1a3a;
+  aspect-ratio: 1 / 1; /* 保持正方形比例，与原图视觉一致，可自适应 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-image{
+  width:100%;
+  height:100%;
+  object-fit: contain;
+  display:block;
+  background:#2a254b;
+  transition: opacity 0.2s ease;
+}
+
+/* 左右箭头按钮 */
+.carousel-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  border:none;
+  color:white;
+  font-size:28px;
+  font-weight:bold;
+  cursor:pointer;
+  padding:0 12px;
+  border-radius:40px;
+  line-height:48px;
+  transition:0.2s;
+  z-index:10;
+  width:42px;
+  text-align:center;
+  opacity:0.8;
+  font-family:monospace;
+}
+.carousel-btn:hover:not(.disabled){
+  background:var(--orange);
+  color:#1e1a3a;
+  opacity:1;
+  transform:translateY(-50%) scale(1.02);
+}
+.carousel-btn.disabled{
+  opacity:0.3;
+  cursor:default;
+  pointer-events:none;
+}
+.prev-btn{
+  left:12px;
+}
+.next-btn{
+  right:12px;
+}
+
+/* 指示点 */
+.dots-container{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:12px;
+  margin-bottom:12px;
+  padding:4px;
+}
+.dot{
+  width:10px;
+  height:10px;
+  background:rgba(255,255,255,0.5);
+  border-radius:50%;
+  cursor:pointer;
+  transition:0.2s;
+}
+.dot.active-dot{
+  background:var(--orange);
+  width:26px;
+  border-radius:12px;
+  transform:scale(1.1);
+}
+.dot:hover{
+  background:var(--orange);
+  opacity:0.9;
+}
+
+/* 图片下方提供图注说明，增强信息 (可选) */
+.img-caption{
+  text-align:center;
+  font-size:0.8rem;
+  padding:8px 5px;
+  background:rgba(0,0,0,0.4);
+  border-top:1px solid rgba(255,255,255,0.15);
+  color:#f0e6d0;
+  letter-spacing:1px;
+  font-weight:500;
+  border-radius:0 0 18px 18px;
+  margin-top:-6px;
+}
+
+.profile{
+  background:rgba(255,255,255,.08);
+  padding:26px 30px;
+  border-radius:20px;
+  line-height:1.9;
+  flex:1;
+}
+
+.profile strong{color:var(--orange)}
+
+/* ===== 下载区块（完全保留原始设计） ===== */
+.download{
+  margin-top:50px;
+  padding:24px;
+  background:rgba(0,0,0,.25);
+  border-radius:18px;
+  backdrop-filter: blur(2px);
+}
+
+.download h3{
+  margin:0 0 24px 0;
+  font-size:26px;
+  font-weight:500;
+  letter-spacing:1px;
+  border-left:4px solid var(--orange);
+  padding-left:16px;
+  color:var(--orange);
+}
+
+.download-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+  justify-content:center;
+  align-items:stretch;
+}
+
+.download-item{
+  flex:1;
+  min-width:260px;
+  background:rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:20px 18px;
+  transition:transform 0.2s ease, background 0.2s;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.15);
+}
+
+.download-item:hover{
+  background:rgba(255,255,255,.12);
+  transform:translateY(-3px);
+}
+
+.download-label{
+  font-size:1.35rem;
+  font-weight:bold;
+  background:rgba(255,180,71,0.2);
+  display:inline-block;
+  padding:6px 18px;
+  border-radius:40px;
+  margin-bottom:18px;
+  color:var(--orange);
+  letter-spacing:1px;
+}
+
+.download-link{
+  display:inline-block;
+  background:var(--orange);
+  color:#1e1a3a;
+  text-decoration:none;
+  font-weight:bold;
+  padding:10px 20px;
+  border-radius:40px;
+  transition:0.2s;
+  font-size:0.95rem;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.download-link:hover{
+  background:#ffa01e;
+  transform:scale(1.02);
+  box-shadow:0 6px 14px rgba(0,0,0,0.3);
+}
+
+.download-note{
+  font-size:0.75rem;
+  margin-top:12px;
+  opacity:0.7;
+}
+
+details{
+  margin-bottom:12px;
+  background:rgba(255,255,255,0.03);
+  border-radius:16px;
+  transition:0.2s;
+}
+details summary{
+  cursor:pointer;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.05);
+  border-radius:16px;
+  font-weight:bold;
+  font-size:1rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  transition:0.2s;
+}
+details summary::-webkit-details-marker {
+  display: none;
+}
+details summary::before {
+  content: "▶";
+  font-size: 0.85rem;
+  margin-right: 12px;
+  display: inline-block;
+  transition: transform 0.2s;
+  color:var(--orange);
+}
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+details summary:hover{
+  background:rgba(255,180,71,0.15);
+}
+.detail-content{
+  padding:12px 12px 16px 12px;
+  border-top:1px solid rgba(255,255,255,0.1);
+  margin-top:4px;
+}
+
+/* ===== 音源使用规约 ===== */
+.terms{
+  margin-top:50px;
+  padding:24px;
+  background:rgba(0,0,0,.25);
+  border-radius:18px;
+  backdrop-filter:blur(2px);
+}
+.terms h3{
+  margin:0 0 20px 0;
+  font-size:26px;
+  font-weight:500;
+  letter-spacing:1px;
+  border-left:4px solid var(--orange);
+  padding-left:16px;
+  color:var(--orange);
+}
+.terms-intro{
+  line-height:1.8;
+  opacity:.9;
+  margin:0 0 16px;
+}
+.terms details{margin-bottom:12px;}
+.terms details summary{font-size:1rem;}
+.terms .detail-content{line-height:1.85;}
+.terms ul{padding-left:1.4em;margin:6px 0;}
+.terms li{padding-left:2px;margin:5px 0;}
+@media(max-width:768px){
+  .terms h3{font-size:22px;}
+  .terms details summary{font-size:.95rem;}
+}
+
+footer{
+  margin-top:60px;
+  text-align:center;
+  opacity:.6;
+  font-size:14px;
+}
+
+@media(max-width:768px){
+  .main{flex-direction:column}
+  header{justify-content:center;gap:14px}
+  .download-grid{flex-direction:column; gap:16px;}
+  .download-item{min-width:auto;}
+  .download h3{font-size:22px;}
+  details summary{font-size:0.95rem;}
+  .visual{max-width:320px;}
+  .carousel-btn{
+    font-size:24px;
+    width:36px;
+    line-height:42px;
+    padding:0 8px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg" id="bg"></div>
+
+<div class="wrapper">
+
+<header>
+  <h1 id="name">猫音ネコ</h1>
+  <div class="lang">
+    <button onclick="setLang('cn', this)" class="active">中</button>
+    <button onclick="setLang('jp', this)">日</button>
+    <button onclick="setLang('en', this)">EN</button>
+  </div>
+</header>
+
+<section class="main">
+  <!-- 轮播图区块：三张图可翻页 (原图 + 三视图 + 眠い立绘) -->
+  <div class="visual">
+    <div class="carousel-container">
+      <button class="carousel-btn prev-btn" id="prevBtn" aria-label="上一张">‹</button>
+      <img class="carousel-image" id="carouselImg" alt="猫音ネコ 插画" src="">
+      <button class="carousel-btn next-btn" id="nextBtn" aria-label="下一张">›</button>
+    </div>
+    <div class="dots-container" id="dotsContainer"></div>
+    <div class="img-caption" id="imgCaption">猫音ネコ · 公式立绘</div>
+  </div>
+
+  <div class="profile" id="profile"></div>
+</section>
+
+<!-- 声库下载区域（完全不变，保持原有四个折叠音色及OpenUTAU） -->
+<div class="download">
+  <h3>声库下载</h3>
+  <div class="download-grid">
+    <div class="download-item">
+      <div class="download-label">猫音ネコ · OpenUTAU用</div>
+      <a class="download-link" href="https://www.nekonekone-voicebank-download.com/NEKO-OUset.zip" target="_blank" rel="noopener noreferrer">
+        ⬇ 下载 OpenUTAU 声库
+      </a>
+      <div class="download-note">适用于 OpenUTAU 编辑器 | 优化配置</div>
+    </div>
+
+    <div class="download-item">
+      <div class="download-label">猫音ネコ · 原版UTAU用</div>
+      <div style="margin-top: 8px; text-align: left;">
+        <details>
+          <summary><span style="font-weight:600;">Normal 音色</span></summary>
+          <div class="detail-content">
+            <a class="download-link" href="https://www.nekonekone-voicebank-download.com/Neko_normaltougou-UTAU.zip" target="_blank" rel="noopener noreferrer">
+              ⬇ 下载 Normal 声库
+            </a>
+            <div class="download-note">标准力度・平衡音质・适合多数乐曲</div>
+          </div>
+        </details>
+        <details>
+          <summary><span style="font-weight:600;">Weak 音色</span></summary>
+          <div class="detail-content">
+            <a class="download-link" href="https://www.nekonekone-voicebank-download.com/Neko_weakVCV-UTAU.zip" target="_blank" rel="noopener noreferrer">
+              ⬇ 下载 Weak 声库
+            </a>
+            <div class="download-note">轻柔细语・柔和表现・低张力歌唱</div>
+          </div>
+        </details>
+        <details>
+          <summary><span style="font-weight:600;">Power 音色</span></summary>
+          <div class="detail-content">
+            <a class="download-link" href="https://www.nekonekone-voicebank-download.com/Neko_powerVCV-UTAU.zip" target="_blank" rel="noopener noreferrer">
+              ⬇ 下载 Power 声库
+            </a>
+            <div class="download-note">强劲有力・感情充沛・高能量演唱</div>
+          </div>
+        </details>
+        <details>
+          <summary><span style="font-weight:600;">Extra 特殊音素</span></summary>
+          <div class="detail-content">
+            <a class="download-link" href="https://www.nekonekone-voicebank-download.com/Neko_extra-UTAU.zip" target="_blank" rel="noopener noreferrer">
+              ⬇ 下载 Extra 特殊音素声库
+            </a>
+            <div class="download-note">扩展音素・特殊发音・实验性追加素材</div>
+          </div>
+        </details>
+      </div>
+      <div class="download-note" style="margin-top: 12px;">※ 原版UTAU专用，四种独立音色/音素包，请根据编曲需求选择</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 音源使用规约：内容随页面语言切换，条款可分别展开/收起 -->
+<section class="terms" id="terms">
+  <h3 id="termsTitle">音源使用规约</h3>
+  <p class="terms-intro" id="termsIntro"></p>
+  <div id="termsContent"></div>
+</section>
+
+<footer>
+  © 猫音ネコ / Nekone Neko 
+</footer>
+
+</div>
+
+<script>
+/* ================= 多语言数据 (不变) ================= */
+const text={
+cn:{
+name:"猫音ネコ",
+profile:`
+<p><strong>猫音ネコ</strong> 是一位以猫又为原型的 UTAU 虚拟歌姬。</p>
+<p>性格是爱惹事的雌小鬼，实际上非常黏人。</p>
+<p>喜欢鲷鱼烧、太鼓达人，抱着玩偶<strong>「眠い」</strong>窝在暖桌里。</p>
+<p><strong>口头禅：</strong>猫咪才不会改过自新——☆</p>`
+},
+jp:{
+name:"猫音ネコ",
+profile:`
+<p><strong>猫音ネコ</strong> は猫又をモチーフにした UTAU バーチャルシンガーです。</p>
+<p>いたずら好きな雌ガキだが、実はとても甘えん坊。</p>
+<p>たい焼き、太鼓の達人、ぬいぐるみ<strong>「眠い」</strong>が大好き。</p>
+<p><strong>口癖：</strong>猫が改心なんてするものか——☆</p>`
+},
+en:{
+name:"Nekone Neko",
+profile:`
+<p><strong>Nekone Neko</strong> is a Nekomata-based UTAU virtual singer.</p>
+<p>A teasing brat by nature, yet secretly clingy.</p>
+<p>Loves Taiyaki, rhythm games, and cuddling her plush <strong>“Nemui”</strong>.</p>
+<p><strong>Catchphrase:</strong> Cat never reform—☆</p>`
+}
+};
+
+
+/* ================= 音源使用规约多语言内容 ================= */
+const termsText = {
+  cn: {
+    title: "音源使用规约",
+    intro: "本音源根据创作者意愿设定以下条款：",
+    sections: [
+      { title: "关于权利归属", html: `<p>本音源的角色、声音、图像等权利由音源管理者、声音提供者、角色设计者共同持有。使用本音源即表示您同意遵守本规约，并同意在权利持有人要求停止使用时立即遵从。</p>` },
+      { title: "用户可以自由进行以下行为，无需联络音源管理者", html: `<ul>
+        <li>在网络上发表二次创作作品（包括视频、音乐、插画等）</li>
+        <li>对音源文件进行个人使用范围内的加工/修正</li>
+        <li>与其他角色组成CP或进行恋爱题材描写</li>
+        <li>适度的成人向内容</li>
+        <li>轻度暴力/猎奇表现</li>
+        <li>服装更改、性别转换、年龄操作等角色外貌变更</li>
+        <li>cosplay活动（含服装制作与贩卖）</li>
+      </ul>` },
+      { title: "以下行为需要事先联络音源管理者", html: `<ul>
+        <li>所有线下商业活动</li>
+        <li>使用本音源进行虚拟主播活动</li>
+        <li>配布自行修正的原音设定或频率表</li>
+        <li>将本音源用于原创角色配音等非原角色用途</li>
+        <li>使用本音源进行AI语音模型训练或AI绘画生成</li>
+      </ul>` },
+      { title: "严格禁止以下行为", html: `<ul>
+        <li>擅自二次配布音源文件</li>
+        <li>将音源用于政治宣传、宗教布教相关表现</li>
+        <li>恶意损害角色形象或声誉的行为</li>
+        <li>创作过于重度的成人向/暴力血腥/猎奇向内容</li>
+      </ul>` },
+      { title: "补充说明", html: `<ul><li>关于AI技术的使用：允许使用本音源进行AI语音模型训练，但禁止将生成的模型用于商业目的或二次配布</li></ul>` }
+    ]
+  },
+  jp: {
+    title: "音源利用規約",
+    intro: "本音源は、制作者の意向に基づき、以下の条項を定めます。",
+    sections: [
+      { title: "権利の帰属について", html: `<p>本音源のキャラクター、音声、画像等の権利は、音源管理者、音声提供者、キャラクターデザイナー等の制作者が保有します。本音源をご利用の際は、本規約に同意したものとみなし、権利者から利用停止の要請があった場合は直ちにそれに従うものとします。</p>` },
+      { title: "ユーザーは以下の行為を自由に行うことができます（音源管理者への連絡は不要）", html: `<ul>
+        <li>インターネット上での二次創作作品（動画、音楽、イラスト等）の発表</li>
+        <li>個人利用の範囲内での音源ファイルの加工・修正</li>
+        <li>他キャラクターとのCP形成や恋愛題材の描写</li>
+        <li>適度なアダルト向け表現</li>
+        <li>軽度の暴力・猟奇的表現（戦闘シーン、流血など）</li>
+        <li>服装変更、性転換、年齢操作など、キャラクター外見の改変</li>
+        <li>コスプレ活動（衣装製作・販売を含む）</li>
+      </ul>` },
+      { title: "以下の行為は、事前に音源管理者への連絡が必要です", html: `<ul>
+        <li>すべてのオフライン商業活動</li>
+        <li>本音源を使用したバーチャルYouTuber活動</li>
+        <li>自作の原音設定・周波数表の再配布</li>
+        <li>本音源を元のキャラクター以外の用途（オリジナルキャラクターの声など）に使用すること</li>
+        <li>本音源を使用したAI音声モデルの訓練、またはAI生成画像の作成</li>
+      </ul>` },
+      { title: "以下の行為は固く禁じられています", html: `<ul>
+        <li>音源ファイルの無断二次配布</li>
+        <li>政治的プロパガンダ、宗教的布教に関連する表現</li>
+        <li>キャラクターのイメージや評判を意図的に傷つける行為</li>
+        <li>過度に重い成人向け・暴力・猟奇的な内容の創作</li>
+      </ul>` },
+      { title: "補足", html: `<ul><li>AI技術の利用について：本音源を使用したAI音声モデルの訓練は許可しますが、生成されたモデルの商用利用や二次配布は禁止します。</li></ul>` }
+    ]
+  },
+  en: {
+    title: "Voicebank Terms of Use",
+    intro: "The following terms are established in accordance with the creator's wishes.",
+    sections: [
+      { title: "Ownership and Rights", html: `<p>The rights to this voicebank's character, voice, images, and other related materials are jointly held by the voicebank administrator, voice provider, and character designer. By using this voicebank, you agree to comply with these terms. If a rights holder requests that you stop using it, you must do so immediately.</p>` },
+      { title: "The following uses are permitted without contacting the voicebank administrator", html: `<ul>
+        <li>Publishing derivative works online, including videos, music, and illustrations</li>
+        <li>Editing or modifying the voicebank files for personal use</li>
+        <li>Pairing the character with other characters or depicting romantic relationships</li>
+        <li>Moderate adult-oriented content</li>
+        <li>Mild violence or grotesque themes</li>
+        <li>Changes to the character's appearance, including outfit changes, gender changes, and age adjustments</li>
+        <li>Cosplay activities, including making and selling costumes</li>
+      </ul>` },
+      { title: "The following uses require prior contact with the voicebank administrator", html: `<ul>
+        <li>All offline commercial activities</li>
+        <li>Using this voicebank for virtual streamer activities</li>
+        <li>Redistributing oto.ini settings or frequency tables that you have modified yourself</li>
+        <li>Using this voicebank for purposes unrelated to the original character, such as providing a voice for an original character</li>
+        <li>Using this voicebank for AI voice model training or AI-generated image creation</li>
+      </ul>` },
+      { title: "The following activities are strictly prohibited", html: `<ul>
+        <li>Redistributing the voicebank files without permission</li>
+        <li>Using the voicebank in political propaganda or religious proselytizing</li>
+        <li>Maliciously damaging the character's image or reputation</li>
+        <li>Creating excessively explicit adult content, extreme violence, gore, or grotesque content</li>
+      </ul>` },
+      { title: "Additional Notes", html: `<ul><li>Use of AI technology: Training AI voice models using this voicebank is permitted, but using the resulting models for commercial purposes or redistributing them is prohibited.</li></ul>` }
+    ]
+  }
+};
+
+function renderTerms(lang) {
+  const data = termsText[lang] || termsText.cn;
+  document.getElementById("termsTitle").textContent = data.title;
+  document.getElementById("termsIntro").textContent = data.intro;
+  document.getElementById("termsContent").innerHTML = data.sections.map(section =>
+    `<details><summary>${section.title}</summary><div class="detail-content">${section.html}</div></details>`
+  ).join("");
+}
+
+function setLang(l, btnElement){
+  document.getElementById("name").innerHTML = text[l].name;
+  document.getElementById("profile").innerHTML = text[l].profile;
+  renderTerms(l);
+  let activeBtn = btnElement;
+  if(!activeBtn){
+    const btns = document.querySelectorAll(".lang button");
+    for(let btn of btns){
+      if((l === 'cn' && btn.innerText === '中') ||
+         (l === 'jp' && btn.innerText === '日') ||
+         (l === 'en' && btn.innerText === 'EN')){
+        activeBtn = btn;
+        break;
+      }
+    }
+  }
+  if(activeBtn){
+    document.querySelectorAll(".lang button").forEach(btn => btn.classList.remove("active"));
+    activeBtn.classList.add("active");
+  }
+}
+setLang("cn");
+
+/* ================= 新增图片轮播组件 (三张图翻页: 原图 + 三视图 + 眠い立绘) ================= */
+// 定义三张图片资源 (url + 标题 + alt说明)
+// 注：以下链接为示意链接，实际部署时请替换为真实图片地址。为了防止破图，onerror会生成友好的占位图提示替换。
+// 图片资源说明：第一张保留原始 neko.png，第二张为「猫音ネコ三视图」，第三张为「眠い (Nemui) 立绘」。
+// 使用者只需替换下方 urls 数组中的链接即可，样式及翻页功能完整保留。
+const slides = [
+  {
+    url: "https://www.nekonekone-voicebank-download.com/neko.png",
+    title: "猫音ネコ · 公式立绘",
+    alt: "猫音ネコ 标准立绘"
+  },
+  {
+    url: "https://www.nekonekone-voicebank-download.com/neko_sanshizu.png",
+    title: "猫音ネコ · 三视图设定",
+    alt: "猫音ネコ 三视图 (正面/侧面/背面)"
+  },
+  {
+    url: "https://www.nekonekone-voicebank-download.com/nemui_illust.png",
+    title: "「眠い」ぬいぐるみ · 专属立绘",
+    alt: "眠い玩偶 独立立绘"
+  }
+];
+
+let currentIndex = 0;
+const imgElement = document.getElementById("carouselImg");
+const captionElement = document.getElementById("imgCaption");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const dotsContainer = document.getElementById("dotsContainer");
+
+// 优雅的占位函数: 若原图加载失败，生成 svg 占位图 (带说明文本)，且不破坏布局，并保留"待替换"提示
+function generatePlaceholderSVG(titleText, altText) {
+  // 用于显示的简短文本 (避免过长)
+  let displayMsg = titleText || "图片待更新";
+  if(displayMsg.length > 28) displayMsg = displayMsg.substring(0, 25)+"...";
+  const svgString = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+      <rect width="400" height="400" fill="#2b265a" rx="16" ry="16"/>
+      <circle cx="200" cy="150" r="60" fill="#ffb34744" stroke="#ffb347" stroke-width="2"/>
+      <text x="200" y="130" font-size="26" text-anchor="middle" fill="#ffb347" font-weight="bold" font-family="Segoe UI, sans-serif">🐱✨</text>
+      <text x="200" y="220" font-size="18" text-anchor="middle" fill="#f0e6d0" font-family="Segoe UI, sans-serif">${displayMsg}</text>
+      <text x="200" y="260" font-size="13" text-anchor="middle" fill="#bbaaff" font-family="Segoe UI, sans-serif">🖌️ 图片链接待替换</text>
+      <text x="200" y="290" font-size="12" text-anchor="middle" fill="#ffffff66">请更新 slides 数组中的 url</text>
+    </svg>
+  `;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+}
+
+// 处理图片加载失败，自动替换为优雅占位图，不会导致无限循环
+function handleImageError(event) {
+  const img = event.target;
+  if (img.getAttribute('data-placeholder-applied') === 'true') return;
+  const currentAlt = img.alt || slides[currentIndex]?.alt || "猫音插画";
+  const currentTitle = slides[currentIndex]?.title || "图像预览";
+  const placeholderSrc = generatePlaceholderSVG(currentTitle, currentAlt);
+  img.src = placeholderSrc;
+  img.setAttribute('data-placeholder-applied', 'true');
+  // 可选: 显示提示说明替换真实url
+  if(captionElement) captionElement.style.opacity = "0.9";
+}
+
+// 更新轮播图片、标题、点状态以及箭头禁用逻辑
+function updateCarousel() {
+  if (!imgElement) return;
+  const slide = slides[currentIndex];
+  // 移除占位标记，每次切换尝试加载真实url
+  imgElement.removeAttribute('data-placeholder-applied');
+  // 先设置新src，绑定错误处理
+  imgElement.src = slide.url;
+  imgElement.alt = slide.alt;
+  imgElement.onerror = handleImageError;
+  
+  // 更新下方图注
+  if (captionElement) {
+    captionElement.textContent = slide.title;
+  }
+  
+  // 更新小圆点高亮
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((dot, idx) => {
+    if (idx === currentIndex) {
+      dot.classList.add('active-dot');
+    } else {
+      dot.classList.remove('active-dot');
+    }
+  });
+  
+  // 控制左右箭头禁用状态 (边界时不可再点)
+  if (prevBtn) {
+    if (currentIndex === 0) {
+      prevBtn.classList.add('disabled');
+    } else {
+      prevBtn.classList.remove('disabled');
+    }
+  }
+  if (nextBtn) {
+    if (currentIndex === slides.length - 1) {
+      nextBtn.classList.add('disabled');
+    } else {
+      nextBtn.classList.remove('disabled');
+    }
+  }
+}
+
+// 切换到上一张
+function prevSlide() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateCarousel();
+  }
+}
+
+// 切换到下一张
+function nextSlide() {
+  if (currentIndex < slides.length - 1) {
+    currentIndex++;
+    updateCarousel();
+  }
+}
+
+// 生成dots并绑定事件
+function buildDots() {
+  if (!dotsContainer) return;
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    if (i === currentIndex) dot.classList.add('active-dot');
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentIndex = i;
+      updateCarousel();
+    });
+    dotsContainer.appendChild(dot);
+  }
+}
+
+// 绑定按钮事件
+function bindCarouselEvents() {
+  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+  // 可选键盘左右切换支持
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      if (currentIndex > 0) prevSlide();
+      e.preventDefault();
+    } else if (e.key === 'ArrowRight') {
+      if (currentIndex < slides.length - 1) nextSlide();
+      e.preventDefault();
+    }
+  });
+}
+
+// 预检测: 如果第一张图片加载失败也要显示友好占位, 但同时保留切换优雅
+function initCarousel() {
+  buildDots();
+  bindCarouselEvents();
+  updateCarousel();
+}
+
+// 启动轮播
+initCarousel();
+
+/* ================= 原有背景漂浮特效 (猫爪/音符/星星) ================= */
+const bg=document.getElementById("bg");
+const icons=["🐾","♪","✦"];
+const effects=[];
+
+for(let i=0;i<30;i++){
+  const e=document.createElement("div");
+  e.className="effect";
+  e.textContent=icons[Math.floor(Math.random()*icons.length)];
+  e.style.left=Math.random()*100+"vw";
+  e.style.animationDuration=18+Math.random()*20+"s";
+  e.style.animationDelay=Math.random()*10+"s";
+  e.style.fontSize=(Math.random()*16+16)+"px";
+  bg.appendChild(e);
+  effects.push(e);
+}
+
+/* 鼠标视差微动 (PC) */
+if(!/Mobi|Android/i.test(navigator.userAgent)){
+  document.addEventListener("mousemove",e=>{
+    const x=(e.clientX/window.innerWidth-.5)*12;
+    const y=(e.clientY/window.innerHeight-.5)*12;
+    effects.forEach(el=>{
+      el.style.transform=`translate(${x}px,${y}px)`;
+    });
+  });
+}
+
+// 注：轮播三视图及眠い立绘的URL目前使用示例占位链接，实际部署时请替换 slides 数组中的真实图片地址！！！
+// 此外，保持原有下载区域、折叠音色、UTAU声库配置完全不变。
+</script>
+</body>
 </html>
